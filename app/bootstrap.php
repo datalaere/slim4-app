@@ -1,14 +1,12 @@
 <?php
 
 use DI\Container;
-use Psr\Container\ContainerInterface;
-use Selective\BasePath\BasePathMiddleware;
 use Slim\Factory\AppFactory;
-use Slim\Views\Twig;
-use Slim\Views\TwigMiddleware;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+
+// Load environment
 try {
     (new Dotenv\Dotenv(__DIR__ . '/../'))->load();
 } catch (Dotenv\Exception\InvalidPathException $e) {
@@ -28,46 +26,19 @@ AppFactory::setContainer($container);
  */
 $app = AppFactory::create();
 
-// Set view in Container
-$container->set('view', function() {
-    return Twig::create(__DIR__ . '/resources/views', 
-    ['cache' => getenv('VIEW_CACHE_DISABLED') ? false : __DIR__ . '/../storage/views']);
-});
-
-$container->set('settings', function () {
-    return [
-        'displayErrorDetails' => getenv('APP_DEBUG')  ? getenv('APP_DEBUG') : false,
-
-        'app' => [
-            'name' => getenv('APP_NAME') ? getenv('APP_NAME') : 'Slim4 App',
-        ],
-    ];
-});
-
 /**
   * The routing middleware should be added earlier than the ErrorMiddleware
   * Otherwise exceptions thrown from it will not be handled by the middleware
   */
 $app->addRoutingMiddleware();
 
-// Set the base path to run the app in a subdirectory.
-// This path is used in urlFor().
-$app->add(new BasePathMiddleware($app));
+// Load settings
+require 'config/settings.php';
 
-/**
- * Add Error Middleware
- *
- * @param bool                  $displayErrorDetails -> Should be set to false in production
- * @param bool                  $logErrors -> Parameter is passed to the default ErrorHandler
- * @param bool                  $logErrorDetails -> Display error details in error log
- * @param LoggerInterface|null  $logger -> Optional PSR-3 Logger  
- *
- * Note: This middleware should be added last. It will not handle any exceptions/errors
- * for middleware added after it.
- */
-$app->addErrorMiddleware(true, false, false);
+// Load container
+require 'config/container.php';
 
-// Add Twig-View Middleware
-$app->add(TwigMiddleware::createFromContainer($app));
+// Load error handler
+require 'config/errors.php';
 
 require_once __DIR__ . '/routes/web.php';
