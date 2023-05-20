@@ -8,6 +8,11 @@ $container->set('settings', function () {
             'name' => getenv('APP_NAME') ? getenv('APP_NAME') : 'Slim4 App',
         ],
 
+        'view' => [
+            'storage' => '',
+            'cache' => false
+        ],
+
         'db' => [
             'driver' => 'mysql',
             'host' => 'localhost',

@@ -7,7 +7,7 @@ use Selective\BasePath\BasePathMiddleware;
 // Set view in Container
 $container->set('view', function() {
     return Twig::create(__DIR__ . '../../resources/views', 
-    ['cache' => getenv('VIEW_CACHE_DISABLED') ? false : __DIR__ . '/../../storage/views']);
+    ['cache' => getenv('VIEW_CACHE_DISABLED') ? __DIR__ . '/../../storage/views' : false]);
 });
 
 // Add Twig-View Middleware
