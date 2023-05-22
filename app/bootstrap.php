@@ -3,8 +3,12 @@
 use DI\Container;
 use Slim\Factory\AppFactory;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+use App\Controllers\Controller;
 
+use App\Middlewares\AuthMiddleware;
+
+// Composer autoloader
+require_once __DIR__ . '/../vendor/autoload.php';
 
 // Load environment
 try {
@@ -26,6 +30,9 @@ AppFactory::setContainer($container);
  */
 $app = AppFactory::create();
 
+// register our global middleware that uses route names
+$app->add(new AuthMiddleware());
+
 /**
   * The routing middleware should be added earlier than the ErrorMiddleware
   * Otherwise exceptions thrown from it will not be handled by the middleware
@@ -40,5 +47,14 @@ require 'config/container.php';
 
 // Load error handler
 require 'config/errors.php';
+
+// Load database
+require 'config/database.php';
+
+// Load controllers
+// require 'config/controllers.php';
+
+// Load helpers
+require 'helpers.php';
 
 require_once __DIR__ . '/routes/web.php';

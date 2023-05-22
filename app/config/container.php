@@ -10,6 +10,9 @@ $container->set('view', function() {
     ['cache' => getenv('VIEW_CACHE_DISABLED') ? __DIR__ . '/../../storage/views' : false]);
 });
 
+// Creat settings object
+$settings = $container->get('settings');
+
 // Add Twig-View Middleware
 $app->add(TwigMiddleware::createFromContainer($app));
 
